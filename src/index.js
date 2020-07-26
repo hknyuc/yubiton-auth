@@ -48,19 +48,27 @@ function createUser(o){
 }
 
 module.exports.jwt = function ({secret}){
-    return function (req,res,next){
-      const authHeader = req.headers.authorization;
-      if (authHeader) {
-          const token = authHeader.split(' ')[1];
-          new Auth(secret).verify(token)
-          .then((user)=>{
-            req.user = user;
-            next();
-          }).catch(()=>{
-             res.sendStatus(403);
-          })
-      } else {
-          res.sendStatus(401);
-      }
+  return function (req,res,next){
+    if(req.method === 'OPTIONS'){
+      next();
+      return;
     }
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        if(token == null){
+          res.sendStatus(401);
+          return;
+        }
+        new Auth(secret).verify(token)
+        .then((user)=>{
+          req.user = user;
+          next();
+        }).catch(()=>{
+           res.sendStatus(403);
+        })
+    } else {
+        res.sendStatus(401);
+    }
+  }
 }
