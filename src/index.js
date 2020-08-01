@@ -65,7 +65,7 @@ module.exports.jwt = function ({secret}){
           req.user = user;
           next();
         }).catch(()=>{
-           res.sendStatus(403);
+           res.sendStatus(401);
         })
     } else {
         res.sendStatus(401);
