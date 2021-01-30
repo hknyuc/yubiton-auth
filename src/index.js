@@ -47,11 +47,11 @@ function createUser(o) {
   }
 }
 
-module.exports.nextAuth = function ({secretKey}){
-    return function (req,res,next){
-      req.secretKey = secretKey;
-      next();
-    }
+module.exports.nextAuth = function ({ secretKey }) {
+  return function (req, res, next) {
+    req.secretKey = secretKey;
+    next();
+  }
 }
 
 module.exports.jwt = function ({ secret }) {
@@ -82,7 +82,7 @@ module.exports.jwt = function ({ secret }) {
 
 function getUser(req, secret) {
   const authHeader = req.headers.authorization;
-  if(!authHeader){
+  if (!authHeader) {
     return Promise.reject();
   }
   const token = authHeader.split(' ')[1];
@@ -104,14 +104,25 @@ function getUser(req, secret) {
  * @param {*} next 
  */
 module.exports.isAdmin = function (req, res, next) {
-  getUser(req,req.secretKey).then((user)=>{
-      let isAdmin = typeof user.isPersonnel == "function" && user.isPersonnel();
-      if (!isAdmin) {
-        res.status(403).end();
-        return;
-      }
-      next();
-  }).catch(()=>{
-      res.status(401).end();
+  getUser(req, req.secretKey).then((user) => {
+    let isAdmin = typeof user.isPersonnel == "function" && user.isPersonnel();
+    if (!isAdmin) {
+      res.status(403).end();
+      return;
+    }
+    req.user = user;
+    next();
+  }).catch(() => {
+    res.status(401).end();
+  })
+}
+
+
+module.exports.authenticated = function (req, res, next) {
+  getUser(req, req.secretKey).then((user) => {
+    req.user = user;
+    next();
+  }).catch(() => {
+    res.status(401).end();
   })
 }
