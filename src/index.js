@@ -47,6 +47,13 @@ function createUser(o) {
   }
 }
 
+module.exports.nextAuth = function ({secretKey}){
+    return function (req,res,next){
+      req.secretKey = secretKey;
+      next();
+    }
+}
+
 module.exports.jwt = function ({ secret }) {
   return function (req, res, next) {
     if (req.method === 'OPTIONS') {
