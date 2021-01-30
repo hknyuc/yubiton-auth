@@ -72,3 +72,22 @@ module.exports.jwt = function ({secret}){
     }
   }
 }
+
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @param {*} next 
+ */
+module.exports.isAdmin = function (req,res,next){
+  if(req.user == null){
+    res.status(401).end();
+    return;
+  }
+   let isAdmin =  typeof req.user.isPersonnel == "function" && req.user.isPersonnel();
+   if(!isAdmin){
+      res.status(403).end();
+      return;
+   }
+   next();
+}
