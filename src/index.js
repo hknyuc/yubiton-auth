@@ -87,8 +87,7 @@ function getUser(req, secret) {
   }
   const token = authHeader.split(' ')[1];
   if (token == null) {
-    res.sendStatus(401);
-    return;
+    return Promise.reject('invalid token');
   }
   return new Auth(secret)
     .verify(token)
