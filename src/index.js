@@ -14,13 +14,13 @@ class Auth {
     })
 
   }
-  async createToken({ type, data }) {
+  async createToken({ type, data ,expiresIn}) {
     return new Promise((resolve, reject) => {
       jwt.sign({
         type,
         data
       }, this.secretKey, {
-        expiresIn: '1d',
+        expiresIn: expiresIn || '1d',
       }, function (err, encoded) {
         if (err != null) {
           return reject(err);
